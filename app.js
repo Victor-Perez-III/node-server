@@ -1,7 +1,7 @@
-const taskList = []
-let id = 1
+const taskList = [];
+let id = 1;
 
-const readline = require("readline")
+const readline = require("readline");
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -9,80 +9,78 @@ const rl = readline.createInterface({
 });
 
 const Menu = () => {
+    console.log(
+        "Que desea hacer? \n 1. Añadir tarea \n 2. Eliminar Tarea \n 3. Ya cumpli la tarea \n 4. Ver tareas \n 0. Salir"
+    );
+    rl.question("Escoja una opción del menú: ", option => {
+        if (option == "1") {
+            addTask()
+                .then(() => Menu())
+                .catch(err => console.error(err));
+        }
+        if (option == "4") {
+            SeeTasks()
+                .then(() => Menu())
+                .catch(err => console.error(err));
+        }
+        if (option == "2") {
+            deleteTask()
+                .then(() => Menu())
+                .catch(err => console.error(err));
+        }
 
-    console.log('Que desea hacer? \n 1. Añadir tarea \n 2. Eliminar Tarea \n 3. Ya cumpli la tarea \n 4. Ver tareas \n 0. Salir');
-    rl.question("Escoja un opcion del menu:" + " ",
-
-        (option) => {
-            if (option == "1") {
-                addTask()
-            }
-            if (option == "4") {
-                SeeTasks();
-
-            }
-            if (option == "2") {
-                deleteTask()
-            }
-
-            if (option == "3") {
-                completeTask()
-            }
-
-
-
-        })
-
-
-
-}
+        if (option == "3") {
+            completeTask()
+                .then(() => Menu())
+                .catch(err => console.error(err));
+        }
+    });
+};
 
 const SeeTasks = () => {
-    //console.log(taskList);
-    taskList.forEach(task => {
-        console.log("----------------------------------------");
-        console.log(`${task.id}. ${task.description}`);
-        console.log(task.state);
-        console.log("----------------------------------------");
+    return new Promise((resolve, reject) => {
+        taskList.forEach(task => {
+            console.log("----------------------------------------");
+            console.log(`${task.id}. ${task.description}`);
+            console.log(task.state);
+            console.log("----------------------------------------");
+        });
+        resolve();
     });
-    Menu()
-
-}
-
-
+};
 
 const addTask = () => {
-    rl.question("Ingrese Tarea:" + " ", task => {
-        taskList.push({
-            id: id++,
-            description: task,
-            state: "No completado"
-        })
-        Menu()
-
-
-    })
-}
+    return new Promise((resolve, reject) => {
+        rl.question("Ingrese Tarea: ", task => {
+            taskList.push({
+                id: id++,
+                description: task,
+                state: "No completado"
+            });
+            resolve();
+        });
+    });
+};
 
 const deleteTask = () => {
-    rl.question("Elija la tarea que desea borrar" + " ", (id) => {
-        taskList.splice(id - 1, 1)
-        Menu()
-    })
-
-}
+    return new Promise((resolve, reject) => {
+        rl.question("Elija la tarea que desea borrar: ", id => {
+            taskList.splice(id - 1, 1);
+            resolve();
+        });
+    });
+};
 
 const completeTask = () => {
-    rl.question("Que tarea completaste" + " ", (id) => {
-        const index = taskList.findIndex((task) => {
-            return task.id == id
-        })
+    return new Promise((resolve, reject) => {
+        rl.question("Que tarea completaste: ", id => {
+            const index = taskList.findIndex(task => {
+                return task.id == id;
+            });
+            taskList[index].state = "Complete";
+            resolve();
+        });
+    });
+};
 
-        taskList[index].state = "Complete"
-
-        Menu()
-    })
-
-}
-
-Menu()
+Menu();
