@@ -29,6 +29,12 @@ const Menu = () => {
                 completeTask()
             }
 
+            if (option == "0") {
+                Menu()
+            }
+
+
+
 
 
         })
@@ -65,7 +71,7 @@ const addTask = () => {
 }
 
 const deleteTask = () => {
-    rl.question("Elija la tarea que desea borrar" + " ", (id) => {
+    rl.question("Elija la tarea que desea borrar:" + " ", (id) => {
         taskList.splice(id - 1, 1)
         Menu()
     })
