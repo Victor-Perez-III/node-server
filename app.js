@@ -1,86 +1,26 @@
-const taskList = [];
-let id = 1;
+const http = require('http');
 
-const readline = require("readline");
+// Lista de tareas en formato JSON
+const tasks = [
+    { id: 1, description: 'Hacer la compra', completed: false },
+    { id: 2, description: 'Estudiar para el examen', completed: true },
+    { id: 3, description: 'Hacer ejercicio', completed: false },
+];
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
+// Crear un servidor HTTP
+const server = http.createServer((req, res) => {
+    if (req.url === '/tasks' && req.method === 'GET') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(tasks));
+    } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Ruta no encontrada');
+    }
 });
 
-const Menu = () => {
-    console.log(
-        "Que desea hacer? \n 1. Añadir tarea \n 2. Eliminar Tarea \n 3. Ya cumpli la tarea \n 4. Ver tareas \n 0. Salir"
-    );
-    rl.question("Escoja una opción del menú: ", option => {
-        if (option == "1") {
-            addTask()
-                .then(() => Menu())
-                .catch(err => console.error(err));
-        }
-        if (option == "4") {
-            SeeTasks()
-                .then(() => Menu())
-                .catch(err => console.error(err));
-        }
-        if (option == "2") {
-            deleteTask()
-                .then(() => Menu())
-                .catch(err => console.error(err));
-        }
+const PORT = process.env.PORT || 3000;
 
-        if (option == "3") {
-            completeTask()
-                .then(() => Menu())
-                .catch(err => console.error(err));
-        }
-    });
-};
-
-const SeeTasks = () => {
-    return new Promise((resolve, reject) => {
-        taskList.forEach(task => {
-            console.log("----------------------------------------");
-            console.log(`${task.id}. ${task.description}`);
-            console.log(task.state);
-            console.log("----------------------------------------");
-        });
-        resolve();
-    });
-};
-
-const addTask = () => {
-    return new Promise((resolve, reject) => {
-        rl.question("Ingrese Tarea: ", task => {
-            taskList.push({
-                id: id++,
-                description: task,
-                state: "No completado"
-            });
-            resolve();
-        });
-    });
-};
-
-const deleteTask = () => {
-    return new Promise((resolve, reject) => {
-        rl.question("Elija la tarea que desea borrar: ", id => {
-            taskList.splice(id - 1, 1);
-            resolve();
-        });
-    });
-};
-
-const completeTask = () => {
-    return new Promise((resolve, reject) => {
-        rl.question("Que tarea completaste: ", id => {
-            const index = taskList.findIndex(task => {
-                return task.id == id;
-            });
-            taskList[index].state = "Complete";
-            resolve();
-        });
-    });
-};
-
-Menu();
+// Iniciar el servidor
+server.listen(PORT, () => {
+    console.log(`Servidor en funcionamiento en el puerto ${PORT}`);
+});
